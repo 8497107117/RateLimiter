@@ -1,0 +1,16 @@
+{
+  "name": "rate-limiter",
+  "version": "1.0.0",
+  "description": "For Dcard Intern",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chen Yu-Chieh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "morgan": "^1.8.1"
+  }
+}

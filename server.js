@@ -19,7 +19,7 @@ app.listen(app.get('port'), () => {
   console.log('Http server is listening on ' + app.get('port'));
 });
 
-app.use(rateLimiter());
+app.use(rateLimiter({ requestLimit: 10, resetTime: 10000 }));
 
 app.get('/', (req, res) => {
   res.send('GETTTTTT');

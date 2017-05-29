@@ -18,30 +18,30 @@ const getIPRemaing = (ip) => {
 	});
 };
 
-const setIPRemaing = (ip, obj) => {
+const setIPRemaing = (ip, obj, { requestLimit, resetTime }) => {
 	return new Promise((resolve, reject) => {
 		const now = +new Date();
 		let newValue;
 		newValue = {
-			remaining: obj ? obj.remaining - 1 : REQUEST_LIMIT - 1,
-			resetTime: obj ? obj.resetTime : new Date(now + RESET_TIME)
+			remaining: obj ? obj.remaining - 1 : requestLimit - 1,
+			resetTime: obj ? obj.resetTime : new Date(now + resetTime)
 		};
 		client.hmset(ip, newValue);
 		if (!obj) {
-			client.expireat(ip, parseInt(now / 1000) + RESET_TIME / 1000);
+			client.expireat(ip, parseInt(now / 1000) + resetTime / 1000);
 		}
 		resolve(newValue);
 	});
 };
 
-async function checkLimit(ip) {
+async function checkLimit(ip, config) {
 	const oldRemaining = await getIPRemaing(ip);
-	const newRemaining = await setIPRemaing(ip, oldRemaining);
+	const newRemaining = await setIPRemaing(ip, oldRemaining, config);
 	return newRemaining;
 };
 
-const rateLimiter = () => (req, res, next) => {
-	checkLimit(req.ip)
+const rateLimiter = (config = { requestLimit: REQUEST_LIMIT, resetTime: RESET_TIME }) => (req, res, next) => {
+	checkLimit(req.ip, config)
 		.then(({ remaining, resetTime }) => {
 			res.set({
 				'X-RateLimit-Remaining': remaining >= 0 ? remaining : 0,
